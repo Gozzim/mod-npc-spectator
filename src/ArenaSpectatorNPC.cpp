@@ -91,7 +91,7 @@ std::string ArenaSpectatorNPC::GetMatchCount(uint8 type) {
     for (auto itr : bgList)
     {
         Battleground* bg = itr.second;
-        if (BattlegroundMgr::IsArenaType(bg->GetBgTypeID()) && bg->GetArenaType() == type)
+        if (BattlegroundMgr::IsArenaType(bg->GetBgTypeID()) && bg->GetArenaType() == type && bg->isRated())
             i++;
     }
 
@@ -127,6 +127,10 @@ void ArenaSpectatorNPC::ShowPage(Player* player, uint16 page, uint32 IsTop) {
 
         if (!arena->GetPlayersSize())
             continue;
+
+        if (!arena->isRated()) {
+            continue;
+        }
 
         if (arena->GetArenaType() == ARENA_TYPE_2v2) {
             firstTeamId = target->GetArenaTeamId(0);
