@@ -18,4 +18,4 @@ NPC for players to use the arena spectating feature in a more elegant way than u
 - Originally written for [TrinityCore](https://github.com/TrinityCore/TrinityCore)
 
 ## License
-This code and content is released under the [GPL v2.0 license](https://github.com/Gozzim/mod-spectator-npc/blob/master/LICENSE).
+This code and content is released under the [GPL 2.0 license](https://github.com/Gozzim/mod-spectator-npc/blob/master/LICENSE).

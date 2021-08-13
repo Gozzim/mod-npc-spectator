@@ -24,9 +24,6 @@
 #include "ArenaSpectator.h"
 #include "ArenaSpectatorNPC.h"
 #include "Chat.h"
-#include "Config.h"
-#include "Language.h"
-#include "ObjectMgr.h"
 #include "ScriptedGossip.h"
 #include "ScriptMgr.h"
 #include "World.h"
@@ -37,7 +34,6 @@ public:
     ArenaSpectatorNPC_Creature() : CreatureScript("ArenaSpectatorNPC_Creature") { }
 
     bool OnGossipHello(Player *player, Creature* creature) override {
-
         if (!player || !creature)
             return true;
 
@@ -52,7 +48,6 @@ public:
     }
 
     bool OnGossipSelect(Player* player, Creature* creature, uint32 /*sender*/, uint32 action) override {
-
         if (!player || !creature)
             return true;
 
