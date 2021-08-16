@@ -22,7 +22,7 @@ jobs:
       - uses: actions/checkout@v2
         with:
           submodules: 'recursive'
-          path: 'modules/mod-spectator-npc'
+          path: 'modules/mod-npc-spectator'
       - name: Cache
         uses: actions/cache@v2
         with:

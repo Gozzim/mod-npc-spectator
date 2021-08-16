@@ -1,7 +1,7 @@
 # This is a module for  ![logo](https://raw.githubusercontent.com/azerothcore/azerothcore.github.io/master/images/logo-github.png) AzerothCore
 ## NPC for arena spectating
-[![core-build](https://github.com/Gozzim/mod-spectator-npc/actions/workflows/core-build.yml/badge.svg)](https://github.com/Gozzim/mod-spectator-npc)
-[![CodeFactor](https://www.codefactor.io/repository/github/gozzim/mod-spectator-npc/badge)](https://www.codefactor.io/repository/github/gozzim/mod-spectator-npc)
+[![core-build](https://github.com/Gozzim/mod-npc-spectator/actions/workflows/core-build.yml/badge.svg)](https://github.com/Gozzim/mod-npc-spectator)
+[![CodeFactor](https://www.codefactor.io/repository/github/gozzim/mod-npc-spectator/badge)](https://www.codefactor.io/repository/github/gozzim/mod-npc-spectator)
 
 ## Description
 NPC for players to use the arena spectating feature in a more elegant way than using a command.
@@ -18,4 +18,4 @@ NPC for players to use the arena spectating feature in a more elegant way than u
 - Originally written for [TrinityCore](https://github.com/TrinityCore/TrinityCore)
 
 ## License
-This code and content is released under the [GPL 2.0 license](https://github.com/Gozzim/mod-spectator-npc/blob/master/LICENSE).
+This code and content is released under the [GPL 2.0 license](https://github.com/Gozzim/mod-npc-spectator/blob/master/LICENSE).
