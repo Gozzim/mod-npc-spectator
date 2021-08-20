@@ -144,6 +144,7 @@ void ArenaSpectatorNPC::ShowPage(Player* player, uint16 page, uint32 IsTop) {
     bool hasNextPage = false;
     const BattlegroundContainer& bgList = sBattlegroundMgr->GetBattlegroundList();
     BattlegroundContainer arenas;
+    uint16 currentPage;
 
     for (auto itr : bgList)
     {
@@ -195,21 +196,28 @@ void ArenaSpectatorNPC::ShowPage(Player* player, uint16 page, uint32 IsTop) {
         }
     }
 
-    if (page > 0) {
-        if (IsTop == 2)
-            AddGossipItemFor(player, 7, "<- Back", GOSSIP_SENDER_MAIN, NPC_SPECTATOR_ACTION_2V2_GAMES + page - 1);
-        if (IsTop == 3)
-            AddGossipItemFor(player, 7, "<- Back", GOSSIP_SENDER_MAIN, NPC_SPECTATOR_ACTION_3V3_GAMES + page - 1);
-        if (IsTop == 5)
-            AddGossipItemFor(player, 7, "<- Back", GOSSIP_SENDER_MAIN, NPC_SPECTATOR_ACTION_5V5_GAMES + page - 1);
+    switch (IsTop)
+    {
+        case 2:
+            currentPage = NPC_SPECTATOR_ACTION_2V2_GAMES + page;
+            break;
+        case 3:
+            currentPage = NPC_SPECTATOR_ACTION_3V3_GAMES + page;
+            break;
+        case 5:
+            currentPage = NPC_SPECTATOR_ACTION_5V5_GAMES + page;
+            break;
+        default:
+            return;
     }
 
-    if (hasNextPage) {
-        if (IsTop == 2)
-            AddGossipItemFor(player, 7, "Next ->", GOSSIP_SENDER_MAIN, NPC_SPECTATOR_ACTION_2V2_GAMES + page + 1);
-        if (IsTop == 3)
-            AddGossipItemFor(player, 7, "Next ->", GOSSIP_SENDER_MAIN, NPC_SPECTATOR_ACTION_3V3_GAMES + page + 1);
-        if (IsTop == 5)
-            AddGossipItemFor(player, 7, "Next ->", GOSSIP_SENDER_MAIN, NPC_SPECTATOR_ACTION_5V5_GAMES + page + 1);
+    if (page > 0)
+    {
+        AddGossipItemFor(player, 7, "<- Back", GOSSIP_SENDER_MAIN, currentPage - 1);
+    }
+
+    if (hasNextPage)
+    {
+        AddGossipItemFor(player, 7, "Next ->", GOSSIP_SENDER_MAIN, currentPage + 1);
     }
 }
