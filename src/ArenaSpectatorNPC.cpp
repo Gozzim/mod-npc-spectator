@@ -98,6 +98,40 @@ std::string ArenaSpectatorNPC::GetMatchCount(uint8 type) {
     return std::to_string(i);
 }
 
+void ArenaSpectatorNPC::GetMatchInformation(Battleground* arena, Player* target, uint32& firstTeamId, std::string& firstTeamName, std::string& secondTeamName, uint16& mmr, uint16& mmrTwo) {
+    uint8 slot;
+
+    switch (arena->GetArenaType())
+    {
+        case ARENA_TYPE_2v2:
+            slot = 0;
+            break;
+        case ARENA_TYPE_3v3:
+            slot = 1;
+            break;
+        case ARENA_TYPE_5v5:
+            slot = 2;
+            break;
+        default:
+            return;
+    }
+
+    firstTeamId = target->GetArenaTeamId(slot);
+    firstTeamName = (sArenaTeamMgr->GetArenaTeamById(firstTeamId))->GetName();
+    Battleground::BattlegroundPlayerMap::const_iterator citr = arena->GetPlayers().begin();
+    for (; citr != arena->GetPlayers().end(); ++citr)
+    {
+        if (Player * plrs = ObjectAccessor::FindPlayer(citr->first)) {
+            if (plrs->GetArenaTeamId(slot) != firstTeamId) {
+                mmrTwo = arena->GetArenaMatchmakerRating(citr->second->GetBgTeamId());
+                secondTeamName = (sArenaTeamMgr->GetArenaTeamById(plrs->GetArenaTeamId(0)))->GetName();
+            } else if (plrs->GetArenaTeamId(slot) == firstTeamId) {
+                mmr = arena->GetArenaMatchmakerRating(citr->second->GetBgTeamId());
+            }
+        }
+    }
+}
+
 void ArenaSpectatorNPC::ShowPage(Player* player, uint16 page, uint32 IsTop) {
     uint32 firstTeamId = 0;
     uint16 TypeOne = 0;
@@ -132,46 +166,7 @@ void ArenaSpectatorNPC::ShowPage(Player* player, uint16 page, uint32 IsTop) {
             continue;
         }
 
-        if (arena->GetArenaType() == ARENA_TYPE_2v2) {
-            firstTeamId = target->GetArenaTeamId(0);
-            firstTeamName = (sArenaTeamMgr->GetArenaTeamById(firstTeamId))->GetName();
-            Battleground::BattlegroundPlayerMap::const_iterator citr = arena->GetPlayers().begin();
-            for (; citr != arena->GetPlayers().end(); ++citr)
-                if (Player * plrs = ObjectAccessor::FindPlayer(citr->first)) {
-                    if (plrs->GetArenaTeamId(0) != firstTeamId) {
-                        mmrTwo = arena->GetArenaMatchmakerRating(citr->second->GetBgTeamId());
-                        secondTeamName = (sArenaTeamMgr->GetArenaTeamById(plrs->GetArenaTeamId(0)))->GetName();
-                    } else if (plrs->GetArenaTeamId(0) == firstTeamId) {
-                        mmr = arena->GetArenaMatchmakerRating(citr->second->GetBgTeamId());
-                    }
-                }
-        } else if (arena->GetArenaType() == ARENA_TYPE_3v3) {
-            firstTeamId = target->GetArenaTeamId(1);
-            firstTeamName = (sArenaTeamMgr->GetArenaTeamById(firstTeamId))->GetName();
-            Battleground::BattlegroundPlayerMap::const_iterator citr = arena->GetPlayers().begin();
-            for (; citr != arena->GetPlayers().end(); ++citr)
-                if (Player * plrs = ObjectAccessor::FindPlayer(citr->first)) {
-                    if (plrs->GetArenaTeamId(1) != firstTeamId) {
-                        mmrTwo = arena->GetArenaMatchmakerRating(citr->second->GetBgTeamId());
-                        secondTeamName = (sArenaTeamMgr->GetArenaTeamById(plrs->GetArenaTeamId(1)))->GetName();
-                    } else if (plrs->GetArenaTeamId(1) == firstTeamId) {
-                        mmr = arena->GetArenaMatchmakerRating(citr->second->GetBgTeamId());
-                    }
-                }
-        } else if (arena->GetArenaType() == ARENA_TYPE_5v5) {
-            firstTeamId = target->GetArenaTeamId(2);
-            firstTeamName = (ObjectAccessor::FindConnectedPlayer((sArenaTeamMgr->GetArenaTeamById(firstTeamId))->GetCaptain()))->GetName();
-            Battleground::BattlegroundPlayerMap::const_iterator citr = arena->GetPlayers().begin();
-            for (; citr != arena->GetPlayers().end(); ++citr)
-                if (Player * plrs = ObjectAccessor::FindPlayer(citr->first)) {
-                    if (plrs->GetArenaTeamId(2) != firstTeamId) {
-                        mmrTwo = arena->GetArenaMatchmakerRating(citr->second->GetBgTeamId());
-                        secondTeamName = (sArenaTeamMgr->GetArenaTeamById(plrs->GetArenaTeamId(2)))->GetName();
-                    } else if (plrs->GetArenaTeamId(2) == firstTeamId) {
-                        mmr = arena->GetArenaMatchmakerRating(citr->second->GetBgTeamId());
-                    }
-                }
-        }
+        GetMatchInformation(arena, target, firstTeamId, firstTeamName, secondTeamName, mmr, mmrTwo);
 
         if (IsTop == 2 && arena->GetArenaType() == ARENA_TYPE_2v2) {
             TypeOne++;
