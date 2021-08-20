@@ -184,7 +184,7 @@ void ArenaSpectatorNPC::ShowPage(Player* player, uint16 page, uint32 IsTop) {
             }
             if (TypeTwo >= page * GamesOnPage)
                 AddGossipItemFor(player, GOSSIP_ICON_BATTLE, GetGamesStringData(arena, mmr, mmrTwo, firstTeamName, secondTeamName), GOSSIP_SENDER_MAIN, NPC_SPECTATOR_ACTION_SELECTED_PLAYER + GetFirstPlayerGuid(arena).GetCounter());
-        } else if (IsTop == 1 && arena->GetArenaType() == ARENA_TYPE_5v5) {
+        } else if (IsTop == 5 && arena->GetArenaType() == ARENA_TYPE_5v5) {
             TypeThree++;
             if (TypeThree > (page + 1) * GamesOnPage) {
                 hasNextPage = true;
@@ -200,7 +200,7 @@ void ArenaSpectatorNPC::ShowPage(Player* player, uint16 page, uint32 IsTop) {
             AddGossipItemFor(player, 7, "<- Back", GOSSIP_SENDER_MAIN, NPC_SPECTATOR_ACTION_2V2_GAMES + page - 1);
         if (IsTop == 3)
             AddGossipItemFor(player, 7, "<- Back", GOSSIP_SENDER_MAIN, NPC_SPECTATOR_ACTION_3V3_GAMES + page - 1);
-        if (IsTop == 1)
+        if (IsTop == 5)
             AddGossipItemFor(player, 7, "<- Back", GOSSIP_SENDER_MAIN, NPC_SPECTATOR_ACTION_5V5_GAMES + page - 1);
     }
 
@@ -209,7 +209,7 @@ void ArenaSpectatorNPC::ShowPage(Player* player, uint16 page, uint32 IsTop) {
             AddGossipItemFor(player, 7, "Next ->", GOSSIP_SENDER_MAIN, NPC_SPECTATOR_ACTION_2V2_GAMES + page + 1);
         if (IsTop == 3)
             AddGossipItemFor(player, 7, "Next ->", GOSSIP_SENDER_MAIN, NPC_SPECTATOR_ACTION_3V3_GAMES + page + 1);
-        if (IsTop == 1)
+        if (IsTop == 5)
             AddGossipItemFor(player, 7, "Next ->", GOSSIP_SENDER_MAIN, NPC_SPECTATOR_ACTION_5V5_GAMES + page + 1);
     }
 }
