@@ -57,22 +57,28 @@ public:
             OnGossipHello(player, creature);
         }
 
-        if (action >= NPC_SPECTATOR_ACTION_2V2_GAMES && action < NPC_SPECTATOR_ACTION_3V3_GAMES) {
+        switch (action)
+        {
+        case NPC_SPECTATOR_ACTION_2V2_GAMES:
             AddGossipItemFor(player, 11, "< Main Menu >", GOSSIP_SENDER_MAIN, 100);
             AddGossipItemFor(player, 4, "Refresh", GOSSIP_SENDER_MAIN, NPC_SPECTATOR_ACTION_2V2_GAMES);
             sArenaSpectatorNPC->ShowPage(player, action - NPC_SPECTATOR_ACTION_2V2_GAMES, ARENA_TYPE_2v2);
             SendGossipMenuFor(player, DEFAULT_GOSSIP_MESSAGE, creature->GetGUID());
-        } else if (action >= NPC_SPECTATOR_ACTION_3V3_GAMES && action < NPC_SPECTATOR_ACTION_5V5_GAMES) {
+            break;
+        case NPC_SPECTATOR_ACTION_3V3_GAMES:
             AddGossipItemFor(player, 11, "< Main Menu >", GOSSIP_SENDER_MAIN, 100);
             AddGossipItemFor(player, 4, "Refresh", GOSSIP_SENDER_MAIN, NPC_SPECTATOR_ACTION_3V3_GAMES);
             sArenaSpectatorNPC->ShowPage(player, action - NPC_SPECTATOR_ACTION_3V3_GAMES, ARENA_TYPE_3v3);
             SendGossipMenuFor(player, DEFAULT_GOSSIP_MESSAGE, creature->GetGUID());
-        } else if (action >= NPC_SPECTATOR_ACTION_5V5_GAMES && action < NPC_SPECTATOR_ACTION_SELECTED_PLAYER) {
+            break;
+        case NPC_SPECTATOR_ACTION_5V5_GAMES:
             AddGossipItemFor(player, 11, "< Main Menu >", GOSSIP_SENDER_MAIN, 100);
             AddGossipItemFor(player, 4, "Refresh", GOSSIP_SENDER_MAIN, NPC_SPECTATOR_ACTION_5V5_GAMES);
             sArenaSpectatorNPC->ShowPage(player, action - NPC_SPECTATOR_ACTION_5V5_GAMES, ARENA_TYPE_5v5);
             SendGossipMenuFor(player, DEFAULT_GOSSIP_MESSAGE, creature->GetGUID());
-        } else if (action == 200) {
+            break;
+        }
+        if (action == 200) {
             AddGossipItemFor(player, 11, "< Main Menu >", GOSSIP_SENDER_MAIN, 100);
             SendGossipMenuFor(player, 190017, creature->GetGUID());
         } else {
