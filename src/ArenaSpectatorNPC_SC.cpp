@@ -147,7 +147,7 @@ public:
     }
 };
 
-void AddArenaSpectatorNPCScripts()
+void AddSC_ArenaSpectatorNPC()
 {
     new ArenaSpectatorNPC_Creature();
     new ArenaSpectatorNPC_BG();
