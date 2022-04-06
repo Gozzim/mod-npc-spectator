@@ -47,7 +47,7 @@ std::string ArenaSpectatorNPC::GetClassIconById(uint8 id) {
 }
 
 std::string ArenaSpectatorNPC::GetGamesStringData(Battleground* team, uint16 mmr, uint16 mmrTwo, std::string firstTeamName, std::string secondTeamName) {
-    std::string teamsMember[BG_TEAMS_COUNT];
+    std::string teamsMember[PVP_TEAMS_COUNT];
     uint32 firstTeamId = 0;
     for (Battleground::BattlegroundPlayerMap::const_iterator itr = team->GetPlayers().begin(); itr != team->GetPlayers().end(); ++itr)
         if (Player * player = ObjectAccessor::FindPlayer(itr->first)) {
@@ -85,10 +85,9 @@ ObjectGuid ArenaSpectatorNPC::GetFirstPlayerGuid(Battleground* team) {
 }
 
 std::string ArenaSpectatorNPC::GetMatchCount(uint8 type) {
-    const BattlegroundContainer& bgList = sBattlegroundMgr->GetBattlegroundList();
     uint16 i = 0;
 
-    for (auto itr : bgList)
+    for (auto& itr : _bgMap)
     {
         Battleground* bg = itr.second;
         if (BattlegroundMgr::IsArenaType(bg->GetBgTypeID()) && bg->GetArenaType() == type && bg->isRated())
@@ -142,22 +141,13 @@ void ArenaSpectatorNPC::ShowPage(Player* player, uint16 page, uint32 IsTop) {
     std::string firstTeamName = "";
     std::string secondTeamName = "";
     bool hasNextPage = false;
-    const BattlegroundContainer& bgList = sBattlegroundMgr->GetBattlegroundList();
-    BattlegroundContainer arenas;
     uint16 currentPage;
 
-    for (auto itr : bgList)
-    {
-        Battleground* bg = itr.second;
-        if (BattlegroundMgr::IsArenaType(bg->GetBgTypeID()))
-            arenas.insert(itr);
-    }
-
-    if (arenas.empty())
+    if (_bgMap.empty())
         return;
 
-    for (BattlegroundContainer::const_iterator itr = arenas.begin(); itr != arenas.end(); ++itr) {
-        Battleground* arena = itr->second;
+    for (auto& itr : _bgMap) {
+        Battleground* arena = itr.second;
         Player *target = ObjectAccessor::FindPlayer(GetFirstPlayerGuid(arena));
 
         if (!arena->GetPlayersSize())
@@ -220,4 +210,22 @@ void ArenaSpectatorNPC::ShowPage(Player* player, uint16 page, uint32 IsTop) {
     {
         AddGossipItemFor(player, 7, "Next ->", GOSSIP_SENDER_MAIN, currentPage + 1);
     }
+}
+
+void ArenaSpectatorNPC::AddBGToMap(Battleground* bg)
+{
+    if (!bg)
+        return;
+
+    _bgMap[bg->GetInstanceID()] = bg;
+}
+
+void ArenaSpectatorNPC::RemoveBGFromMap(Battleground* bg)
+{
+    _bgMap.erase(bg->GetInstanceID());
+}
+
+void ArenaSpectatorNPC::ClearBGMap()
+{
+    _bgMap.clear();
 }

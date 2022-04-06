@@ -28,6 +28,23 @@
 #include "ScriptMgr.h"
 #include "World.h"
 
+class ArenaSpectatorNPC_BG : public BGScript
+{
+public:
+    ArenaSpectatorNPC_BG() : BGScript("ArenaSpectatorNPC_BGScript") { }
+
+    void OnBattlegroundCreate(Battleground* bg) {
+        if (bg->isArena())
+        {
+            sArenaSpectatorNPC->AddBGToMap(bg);
+        }
+    }
+
+    void OnBattlegroundDestroy(Battleground* bg) {
+        sArenaSpectatorNPC->RemoveBGFromMap(bg);
+    }
+};
+
 class ArenaSpectatorNPC_Creature : public CreatureScript
 {
 public:
@@ -133,4 +150,5 @@ public:
 void AddArenaSpectatorNPCScripts()
 {
     new ArenaSpectatorNPC_Creature();
+    new ArenaSpectatorNPC_BG();
 }

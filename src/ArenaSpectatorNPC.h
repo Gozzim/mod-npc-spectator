@@ -24,9 +24,15 @@ public:
     std::string GetMatchCount(uint8 type);
     void GetMatchInformation(Battleground* arena, Player* target, uint32& firstTeamId, std::string& firstTeamName, std::string& secondTeamName, uint16& mmr, uint16& mmrTwo);
     void ShowPage(Player* player, uint16 page, uint32 IsTop);
+    void AddBGToMap(Battleground* bg);
+    void RemoveBGFromMap(Battleground* bg);
+    void ClearBGMap();
 
 private:
     const uint8 GamesOnPage = 14;
+
+    typedef std::unordered_map<uint32, Battleground*> BGMap;
+    BGMap _bgMap;
 };
 
 #define sArenaSpectatorNPC ArenaSpectatorNPC::instance()
