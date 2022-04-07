@@ -1,6 +1,6 @@
 void AddSC_ArenaSpectatorNPC();
 
-void Addmod_npc_spectatorScripts()
+void Addmod_spectator_npcScripts()
 {
     AddSC_ArenaSpectatorNPC();
 }
