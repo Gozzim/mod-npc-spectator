@@ -7,7 +7,8 @@
 ## Description
 NPC for players to use the arena spectating feature in a more elegant way than using a command.
 
-**Requires at least commit [5143872](https://github.com/azerothcore/azerothcore-wotlk/commit/5143872aed7e93ee2ff8658c7c8b6efd7702429c) of [AzerothCore](https://github.com/azerothcore/azerothcore-wotlk)**
+## Requirements
+Requires at least revision [azerothcore-wotlk@5143872](https://github.com/azerothcore/azerothcore-wotlk/commit/5143872aed7e93ee2ff8658c7c8b6efd7702429c) of AzerothCore
 
 ## Installation
 ```
