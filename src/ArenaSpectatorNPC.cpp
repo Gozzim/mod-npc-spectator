@@ -145,7 +145,7 @@ void ArenaSpectatorNPC::GetMatchInformation(Battleground* arena, Player* target,
         if (Player * plrs = ObjectAccessor::FindPlayer(citr->first)) {
             if (plrs->GetArenaTeamId(slot) != firstTeamId) {
                 mmrTwo = arena->GetArenaMatchmakerRating(citr->second->GetBgTeamId());
-                secondTeamName = (sArenaTeamMgr->GetArenaTeamById(plrs->GetArenaTeamId(0)))->GetName();
+                secondTeamName = (sArenaTeamMgr->GetArenaTeamById(plrs->GetArenaTeamId(slot)))->GetName();
             } else if (plrs->GetArenaTeamId(slot) == firstTeamId) {
                 mmr = arena->GetArenaMatchmakerRating(citr->second->GetBgTeamId());
             }
