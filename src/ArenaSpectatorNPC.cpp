@@ -133,6 +133,9 @@ void ArenaSpectatorNPC::GetMatchInformation(Battleground* arena, Player* target,
         case ARENA_TYPE_5v5:
             slot = 2;
             break;
+        case 4: // Solo 3v3
+            slot = 4;
+            break;
         default:
             return;
     }
@@ -158,6 +161,7 @@ void ArenaSpectatorNPC::ShowPage(Player* player, uint16 page, uint32 IsTop) {
     uint16 TypeOne = 0;
     uint16 TypeTwo = 0;
     uint16 TypeThree = 0;
+    uint16 TypeFour = 0;
     uint16 mmr = 0;
     uint16 mmrTwo = 0;
     std::string firstTeamName = "";
@@ -189,7 +193,8 @@ void ArenaSpectatorNPC::ShowPage(Player* player, uint16 page, uint32 IsTop) {
             }
             if (TypeOne >= page * GamesOnPage)
                 AddGossipItemFor(player, GOSSIP_ICON_BATTLE, GetGamesStringData(arena, mmr, mmrTwo, firstTeamName, secondTeamName), GOSSIP_SENDER_MAIN, NPC_SPECTATOR_ACTION_SELECTED_PLAYER + GetFirstPlayerGuid(arena).GetCounter());
-        } else if (IsTop == 3 && arena->GetArenaType() == ARENA_TYPE_3v3) {
+        }
+        else if (IsTop == 3 && arena->GetArenaType() == ARENA_TYPE_3v3) {
             TypeTwo++;
             if (TypeTwo > (page + 1) * GamesOnPage) {
                 hasNextPage = true;
@@ -197,7 +202,19 @@ void ArenaSpectatorNPC::ShowPage(Player* player, uint16 page, uint32 IsTop) {
             }
             if (TypeTwo >= page * GamesOnPage)
                 AddGossipItemFor(player, GOSSIP_ICON_BATTLE, GetGamesStringData(arena, mmr, mmrTwo, firstTeamName, secondTeamName), GOSSIP_SENDER_MAIN, NPC_SPECTATOR_ACTION_SELECTED_PLAYER + GetFirstPlayerGuid(arena).GetCounter());
-        } else if (IsTop == 5 && arena->GetArenaType() == ARENA_TYPE_5v5) {
+        }
+        // Solo 3v3
+        else if (IsTop == 4 && arena->GetArenaType() == 4)
+        {
+            TypeFour++;
+            if (TypeFour > (page + 1) * GamesOnPage) {
+                hasNextPage = true;
+                break;
+            }
+            if (TypeFour >= page * GamesOnPage)
+                AddGossipItemFor(player, GOSSIP_ICON_BATTLE, GetGamesStringData(arena, mmr, mmrTwo, firstTeamName, secondTeamName), GOSSIP_SENDER_MAIN, NPC_SPECTATOR_ACTION_SELECTED_PLAYER + GetFirstPlayerGuid(arena).GetCounter());
+        }
+        else if (IsTop == 5 && arena->GetArenaType() == ARENA_TYPE_5v5) {
             TypeThree++;
             if (TypeThree > (page + 1) * GamesOnPage) {
                 hasNextPage = true;
@@ -215,6 +232,9 @@ void ArenaSpectatorNPC::ShowPage(Player* player, uint16 page, uint32 IsTop) {
             break;
         case 3:
             currentPage = NPC_SPECTATOR_ACTION_3V3_GAMES + page;
+            break;
+        case 4:
+            currentPage = NPC_SPECTATOR_ACTION_3V3SOLO_GAMES + page;
             break;
         case 5:
             currentPage = NPC_SPECTATOR_ACTION_5V5_GAMES + page;

@@ -54,9 +54,12 @@ public:
         if (!player || !creature)
             return true;
 
-        AddGossipItemFor(player, GOSSIP_ICON_CHAT, "|TInterface\\icons\\Achievement_Arena_2v2_4:16|t 2v2 (|cffff0000" + sArenaSpectatorNPC->GetMatchCount(ARENA_TYPE_2v2) + "|r in progress)", GOSSIP_SENDER_MAIN, NPC_SPECTATOR_ACTION_2V2_GAMES);
-        AddGossipItemFor(player, GOSSIP_ICON_CHAT, "|TInterface\\icons\\Achievement_Arena_3v3_4:16|t 3v3 (|cffff0000" + sArenaSpectatorNPC->GetMatchCount(ARENA_TYPE_3v3) + "|r in progress)", GOSSIP_SENDER_MAIN, NPC_SPECTATOR_ACTION_3V3_GAMES);
-        AddGossipItemFor(player, GOSSIP_ICON_CHAT, "|TInterface\\icons\\Achievement_Arena_5v5_4:16|t 5v5 (|cffff0000" + sArenaSpectatorNPC->GetMatchCount(ARENA_TYPE_5v5) + "|r in progress)", GOSSIP_SENDER_MAIN, NPC_SPECTATOR_ACTION_5V5_GAMES);
+        AddGossipItemFor(player, GOSSIP_ICON_BATTLE, "|TInterface\\icons\\Achievement_Arena_2v2_4:16|t 2v2 (|cffff0000" + sArenaSpectatorNPC->GetMatchCount(ARENA_TYPE_2v2) + "|r in progress)", GOSSIP_SENDER_MAIN, NPC_SPECTATOR_ACTION_2V2_GAMES);
+        AddGossipItemFor(player, GOSSIP_ICON_BATTLE, "|TInterface\\icons\\Achievement_Arena_3v3_4:16|t 3v3 (|cffff0000" + sArenaSpectatorNPC->GetMatchCount(ARENA_TYPE_3v3) + "|r in progress)", GOSSIP_SENDER_MAIN, NPC_SPECTATOR_ACTION_3V3_GAMES);
+        // To do: config Show.5v5.Games
+        AddGossipItemFor(player, GOSSIP_ICON_BATTLE, "|TInterface\\icons\\Achievement_Arena_5v5_4:16|t 5v5 (|cffff0000" + sArenaSpectatorNPC->GetMatchCount(ARENA_TYPE_5v5) + "|r in progress)", GOSSIP_SENDER_MAIN, NPC_SPECTATOR_ACTION_5V5_GAMES);
+        // To do: config Show.3v3Solo.Games
+        AddGossipItemFor(player, GOSSIP_ICON_BATTLE, "|TInterface\\icons\\Achievement_Arena_3v3_4:16|t 3v3 Solo (|cffff0000" + sArenaSpectatorNPC->GetMatchCount(4) + "|r in progress)", GOSSIP_SENDER_MAIN, NPC_SPECTATOR_ACTION_3V3SOLO_GAMES);
         AddGossipItemFor(player, GOSSIP_ICON_CHAT, "|TInterface\\icons\\achievement_boss_cthun:16|tSpectate Specific Player", GOSSIP_SENDER_MAIN, NPC_SPECTATOR_ACTION_SPECIFIC, "", 0, true);
         AddGossipItemFor(player, GOSSIP_ICON_CHAT, "|TInterface\\PaperDollInfoFrame\\UI-GearManager-Undo:16|tRefresh", GOSSIP_SENDER_MAIN, 100);
         AddGossipItemFor(player, GOSSIP_ICON_CHAT, "|TInterface\\gossipframe\\dailyactivequesticon:16|tHelp", GOSSIP_SENDER_MAIN, 200);
@@ -84,12 +87,23 @@ public:
             AddGossipItemFor(player, 4, "Refresh", GOSSIP_SENDER_MAIN, NPC_SPECTATOR_ACTION_3V3_GAMES);
             sArenaSpectatorNPC->ShowPage(player, action - NPC_SPECTATOR_ACTION_3V3_GAMES, ARENA_TYPE_3v3);
             SendGossipMenuFor(player, DEFAULT_GOSSIP_MESSAGE, creature->GetGUID());
-        } else if (action >= NPC_SPECTATOR_ACTION_5V5_GAMES && action < NPC_SPECTATOR_ACTION_SELECTED_PLAYER) {
+        }
+        // 5v5
+        //else if (action >= NPC_SPECTATOR_ACTION_5V5_GAMES && action < NPC_SPECTATOR_ACTION_SELECTED_PLAYER) {
+        else if (action >= NPC_SPECTATOR_ACTION_5V5_GAMES && action < NPC_SPECTATOR_ACTION_3V3SOLO_GAMES) {
             AddGossipItemFor(player, 11, "< Main Menu >", GOSSIP_SENDER_MAIN, 100);
             AddGossipItemFor(player, 4, "Refresh", GOSSIP_SENDER_MAIN, NPC_SPECTATOR_ACTION_5V5_GAMES);
             sArenaSpectatorNPC->ShowPage(player, action - NPC_SPECTATOR_ACTION_5V5_GAMES, ARENA_TYPE_5v5);
             SendGossipMenuFor(player, DEFAULT_GOSSIP_MESSAGE, creature->GetGUID());
-        } else if (action == 200) {
+        }
+        // 3v3 Solo
+        else if (action >= NPC_SPECTATOR_ACTION_3V3SOLO_GAMES && action < NPC_SPECTATOR_ACTION_SELECTED_PLAYER) {
+            AddGossipItemFor(player, 11, "< Main Menu >", GOSSIP_SENDER_MAIN, 100);
+            AddGossipItemFor(player, 4, "Refresh", GOSSIP_SENDER_MAIN, NPC_SPECTATOR_ACTION_3V3SOLO_GAMES);
+            sArenaSpectatorNPC->ShowPage(player, action - NPC_SPECTATOR_ACTION_3V3SOLO_GAMES, 4);
+            SendGossipMenuFor(player, DEFAULT_GOSSIP_MESSAGE, creature->GetGUID());
+        }
+        else if (action == 200) {
             AddGossipItemFor(player, 11, "< Main Menu >", GOSSIP_SENDER_MAIN, 100);
             SendGossipMenuFor(player, 190017, creature->GetGUID());
         } else {
