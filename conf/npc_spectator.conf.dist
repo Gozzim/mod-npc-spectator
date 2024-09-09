@@ -1,0 +1,17 @@
+[worldserver]
+
+###################################################################################################
+#   NPC ARENA SPECTATOR
+#
+#   NpcArenaSpectator.Enable
+#       Description: Enable system
+#       Default: 1
+#
+
+NpcArenaSpectator.Enable = 1
+
+NpcArenaSpectator.Enable1v1 = 0
+NpcArenaSpectator.Enable3v3SoloQ = 0
+NpcArenaSpectator.Enable5v5 = 1
+
+NpcArenaSpectator.ShowUnrated = 1
