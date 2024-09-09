@@ -28,6 +28,9 @@
 #include "ScriptMgr.h"
 #include "World.h"
 
+uint32 ARENA_TYPE_1v1 = 1;
+uint32 ARENA_TYPE_3V3_SOLO = 4;
+
 class ArenaSpectatorNPC_BG : public BGScript
 {
 public:
@@ -48,7 +51,10 @@ public:
 class ArenaSpectatorNPC_Creature : public CreatureScript
 {
 public:
-    ArenaSpectatorNPC_Creature() : CreatureScript("ArenaSpectatorNPC_Creature") { }
+    ArenaSpectatorNPC_Creature() : CreatureScript("ArenaSpectatorNPC_Creature") {
+        ARENA_TYPE_1v1 = sConfigMgr->GetOption<uint32>("NpcArenaSpectator.1v1.ArenaType", 1);
+        ARENA_TYPE_3V3_SOLO = sConfigMgr->GetOption<uint32>("NpcArenaSpectator.3v3soloQ.ArenaType", 4);
+    }
 
     bool OnGossipHello(Player *player, Creature* creature) override {
         if (!player || !creature)
@@ -59,14 +65,14 @@ public:
             return true;
         }
 
-        if (sConfigMgr->GetOption<bool>("NpcArenaSpectator.Enable1v1", false)) {
+        if (sConfigMgr->GetOption<bool>("NpcArenaSpectator.1v1.Enable", false)) {
             AddGossipItemFor(player, GOSSIP_ICON_BATTLE, "|TInterface\\icons\\Achievement_Arena_2v2_1:16|t 1v1 (|cffff0000" + sArenaSpectatorNPC->GetMatchCount(ARENA_TYPE_1v1) + "|r in progress)", GOSSIP_SENDER_MAIN, NPC_SPECTATOR_ACTION_1v1_GAMES);
         }
 
         AddGossipItemFor(player, GOSSIP_ICON_BATTLE, "|TInterface\\icons\\Achievement_Arena_2v2_4:16|t 2v2 (|cffff0000" + sArenaSpectatorNPC->GetMatchCount(ARENA_TYPE_2v2) + "|r in progress)", GOSSIP_SENDER_MAIN, NPC_SPECTATOR_ACTION_2V2_GAMES);
         AddGossipItemFor(player, GOSSIP_ICON_BATTLE, "|TInterface\\icons\\Achievement_Arena_3v3_4:16|t 3v3 (|cffff0000" + sArenaSpectatorNPC->GetMatchCount(ARENA_TYPE_3v3) + "|r in progress)", GOSSIP_SENDER_MAIN, NPC_SPECTATOR_ACTION_3V3_GAMES);
 
-        if (sConfigMgr->GetOption<bool>("NpcArenaSpectator.Enable3v3SoloQ", false)) {
+        if (sConfigMgr->GetOption<bool>("NpcArenaSpectator.3v3soloQ.Enable", false)) {
             AddGossipItemFor(player, GOSSIP_ICON_BATTLE, "|TInterface\\icons\\Achievement_Arena_3v3_4:16|t 3v3 Solo (|cffff0000" + sArenaSpectatorNPC->GetMatchCount(ARENA_TYPE_3V3_SOLO) + "|r in progress)", GOSSIP_SENDER_MAIN, NPC_SPECTATOR_ACTION_3V3SOLO_GAMES);
         }
 
@@ -178,12 +184,6 @@ public:
         CloseGossipMenuFor(player);
         return true;
     }
-};
-
-class ConfigLoaderNpcSpectator : public WorldScript
-{
-public:
-    ConfigLoaderNpcSpectator() : WorldScript("config_loader_npc_spectator") {}
 };
 
 void AddSC_ArenaSpectatorNPC()

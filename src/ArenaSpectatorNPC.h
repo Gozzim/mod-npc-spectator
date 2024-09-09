@@ -27,6 +27,7 @@
 #include "Common.h"
 #include "Player.h"
 #include "Config.h"
+#include "WorldScript.h"
 
 #define NPC_ENTRY_SPECTATOR 190017
 
@@ -42,9 +43,10 @@ enum NpcSpectatorActions {
     NPC_SPECTATOR_ACTION_SELECTED_PLAYER = 5000
 };
 
-enum CustomArenaType {
-    ARENA_TYPE_1v1 = 1,
-    ARENA_TYPE_3V3_SOLO = 4
+class ConfigLoaderNpcSpectator : public WorldScript
+{
+public:
+    ConfigLoaderNpcSpectator() : WorldScript("config_loader_npc_spectator") { }
 };
 
 class ArenaSpectatorNPC

@@ -24,6 +24,8 @@
 #include "ArenaTeamMgr.h"
 #include "ScriptedGossip.h"
 #include "ObjectMgr.h"
+#include "Config.h"
+
 
 ArenaSpectatorNPC* ArenaSpectatorNPC::instance()
 {
@@ -114,7 +116,7 @@ std::string ArenaSpectatorNPC::GetMatchCount(uint8 type) {
         Battleground* bg = itr.second;
         if (BattlegroundMgr::IsArenaType(bg->GetBgTypeID()) && bg->GetArenaType() == type)
         {
-            if (sConfigMgr->GetOption<bool>("NpcArenaSpectator.ShowUnrated", true))
+            if (sConfigMgr->GetOption<bool>("NpcArenaSpectator.ShowUnrated", false))
                 i++;
             else if (bg->isRated())
                 i++;
@@ -127,44 +129,32 @@ std::string ArenaSpectatorNPC::GetMatchCount(uint8 type) {
 void ArenaSpectatorNPC::GetMatchInformation(Battleground* arena, Player* target, uint32& firstTeamId, std::string& firstTeamName, std::string& secondTeamName, uint16& mmr, uint16& mmrTwo) {
     uint8 slot;
 
-    switch (arena->GetArenaType())
-    {
-        case ARENA_TYPE_2v2:
-            slot = 0;
-            break;
-        case ARENA_TYPE_3v3:
-            slot = 1;
-            break;
-        case ARENA_TYPE_5v5:
-            slot = 2;
-            break;
-        case ARENA_TYPE_1v1:
-            slot = 3;
-            break;
-        case ARENA_TYPE_3V3_SOLO:
-            slot = 4;
-            break;
-        default:
-            return;
-    }
+    const uint32 ARENA_1v1_SLOT_ID = sConfigMgr->GetOption<uint32>("NpcArenaSpectator.1v1.SlotID", 3);
+    const uint32 ARENA_3V3_SOLO_SLOT_ID = sConfigMgr->GetOption<uint32>("NpcArenaSpectator.3v3.SlotID", 4);
+    const uint32 _ARENA_TYPE_1v1 = sConfigMgr->GetOption<uint32>("NpcArenaSpectator.1v1.ArenaType", 1);
+    const uint32 _ARENA_TYPE_3V3_SOLO = sConfigMgr->GetOption<uint32>("NpcArenaSpectator.3v3soloQ.ArenaType", 4);
 
-    // hackfix for 1v1
-    // how to fix properly: make a hook inside sArenaTeamMgr->GetArenaTeamById() and
-    // implement the one in player->->GetArenaTeamId() from the 1v1 module
-    if (slot == 3) {
-        Battleground::BattlegroundPlayerMap::const_iterator citr = arena->GetPlayers().begin();
-        for (; citr != arena->GetPlayers().end(); ++citr)
+    const auto arenaType = arena->GetArenaType();
+
+    if (arenaType == _ARENA_TYPE_1v1) {
+        slot = ARENA_1v1_SLOT_ID;
+    } else if (arenaType == _ARENA_TYPE_3V3_SOLO) {
+        slot = ARENA_3V3_SOLO_SLOT_ID;
+    } else {
+        switch (arenaType)
         {
-            if (Player * plrs = ObjectAccessor::FindPlayer(citr->first)) {
-                if (firstTeamName == "") {
-                    firstTeamName = plrs->GetName();
-                } else {
-                    secondTeamName = plrs->GetName();
-                }
-            }
+            case ARENA_TYPE_2v2:
+                slot = 0;
+                break;
+            case ARENA_TYPE_3v3:
+                slot = 1;
+                break;
+            case ARENA_TYPE_5v5:
+                slot = 2;
+                break;
+            default:
+                return;
         }
-
-        return;
     }
 
     firstTeamId = target->GetArenaTeamId(slot);
@@ -197,6 +187,9 @@ void ArenaSpectatorNPC::ShowPage(Player* player, uint16 page, uint32 arenaType) 
     bool hasNextPage = false;
     uint16 currentPage;
 
+    const uint32 _ARENA_TYPE_1v1 = sConfigMgr->GetOption<uint32>("NpcArenaSpectator.1v1.ArenaType", 1);
+    const uint32 _ARENA_TYPE_3V3_SOLO = sConfigMgr->GetOption<uint32>("NpcArenaSpectator.3v3soloQ.ArenaType", 4);
+
     if (_bgMap.empty())
         return;
 
@@ -207,13 +200,13 @@ void ArenaSpectatorNPC::ShowPage(Player* player, uint16 page, uint32 arenaType) 
         if (!arena->GetPlayersSize())
             continue;
 
-        if (!sConfigMgr->GetOption<bool>("NpcArenaSpectator.ShowUnrated", true) && !arena->isRated()) {
+        if (!sConfigMgr->GetOption<bool>("NpcArenaSpectator.ShowUnrated", false) && !arena->isRated()) {
             continue;
         }
 
         GetMatchInformation(arena, target, firstTeamId, firstTeamName, secondTeamName, mmr, mmrTwo);
 
-        const std::string prefix = arena->isRated() && sConfigMgr->GetOption<bool>("NpcArenaSpectator.ShowUnrated", true) ? GetClassIconById(CLASS_WARRIOR) : "";
+        const std::string prefix = arena->isRated() && sConfigMgr->GetOption<bool>("NpcArenaSpectator.ShowUnrated", false) ? GetClassIconById(CLASS_WARRIOR) : "";
 
         if (arenaType == ARENA_TYPE_2v2 && arena->GetArenaType() == ARENA_TYPE_2v2) {
             TypeOne++;
@@ -233,7 +226,7 @@ void ArenaSpectatorNPC::ShowPage(Player* player, uint16 page, uint32 arenaType) 
             if (TypeTwo >= page * GamesOnPage)
                 AddGossipItemFor(player, GOSSIP_ICON_BATTLE, prefix + GetGamesStringData(arena, mmr, mmrTwo, firstTeamName, secondTeamName), GOSSIP_SENDER_MAIN, NPC_SPECTATOR_ACTION_SELECTED_PLAYER + GetFirstPlayerGuid(arena).GetCounter());
         }
-        else if (arenaType == ARENA_TYPE_3V3_SOLO && arena->GetArenaType() == ARENA_TYPE_3V3_SOLO)
+        else if (arenaType == _ARENA_TYPE_3V3_SOLO && arena->GetArenaType() == _ARENA_TYPE_3V3_SOLO)
         {
             TypeFour++;
             if (TypeFour > (page + 1) * GamesOnPage) {
@@ -243,7 +236,7 @@ void ArenaSpectatorNPC::ShowPage(Player* player, uint16 page, uint32 arenaType) 
             if (TypeFour >= page * GamesOnPage)
                 AddGossipItemFor(player, GOSSIP_ICON_BATTLE, prefix + GetGamesStringData(arena, mmr, mmrTwo, firstTeamName, secondTeamName), GOSSIP_SENDER_MAIN, NPC_SPECTATOR_ACTION_SELECTED_PLAYER + GetFirstPlayerGuid(arena).GetCounter());
         }
-        else if (arenaType == ARENA_TYPE_1v1 && arena->GetArenaType() == ARENA_TYPE_1v1) {
+        else if (arenaType == _ARENA_TYPE_1v1 && arena->GetArenaType() == _ARENA_TYPE_1v1) {
             Type1v1++;
             if (Type1v1 > (page + 1) * GamesOnPage) {
                 hasNextPage = true;
@@ -264,25 +257,25 @@ void ArenaSpectatorNPC::ShowPage(Player* player, uint16 page, uint32 arenaType) 
 
     }
 
-    switch (arenaType)
-    {
-        case ARENA_TYPE_1v1:
-            currentPage = NPC_SPECTATOR_ACTION_1v1_GAMES + page;
-            break;
-        case ARENA_TYPE_2v2:
-            currentPage = NPC_SPECTATOR_ACTION_2V2_GAMES + page;
-            break;
-        case ARENA_TYPE_3v3:
-            currentPage = NPC_SPECTATOR_ACTION_3V3_GAMES + page;
-            break;
-        case ARENA_TYPE_3V3_SOLO:
-            currentPage = NPC_SPECTATOR_ACTION_3V3SOLO_GAMES + page;
-            break;
-        case ARENA_TYPE_5v5:
-            currentPage = NPC_SPECTATOR_ACTION_5V5_GAMES + page;
-            break;
-        default:
-            return;
+    if (arenaType == _ARENA_TYPE_1v1) {
+        currentPage = NPC_SPECTATOR_ACTION_1v1_GAMES + page;
+    } else if (arenaType == _ARENA_TYPE_3V3_SOLO) {
+        currentPage = NPC_SPECTATOR_ACTION_3V3SOLO_GAMES + page;
+    } else {
+        switch (arenaType)
+        {
+            case ARENA_TYPE_2v2:
+                currentPage = NPC_SPECTATOR_ACTION_2V2_GAMES + page;
+                break;
+            case ARENA_TYPE_3v3:
+                currentPage = NPC_SPECTATOR_ACTION_3V3_GAMES + page;
+                break;
+            case ARENA_TYPE_5v5:
+                currentPage = NPC_SPECTATOR_ACTION_5V5_GAMES + page;
+                break;
+            default:
+                return;
+        }
     }
 
     if (page > 0)
