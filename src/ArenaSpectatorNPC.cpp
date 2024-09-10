@@ -88,15 +88,16 @@ std::string ArenaSpectatorNPC::GetGamesStringData(Battleground* team, uint16 mmr
             teamsMember[firstTeamId == team] += GetClassIconById(player->getClass());
         }
 
-    std::string data = teamsMember[0] + "" + secondTeamName + " (";
+    std::string data = " " + teamsMember[0] + " " + secondTeamName + " (";
     std::stringstream ss;
     std::stringstream sstwo;
     ss << mmr;
     sstwo << mmrTwo;
     data += sstwo.str();
-    data += ") - ";
-    data += "(" + ss.str();
-    data += ") " + firstTeamName + "" + teamsMember[1];
+    data += ") vs\n";
+    data += " " + teamsMember[1] + " " + firstTeamName + " (";
+    data += ss.str();
+    data += ")";
     return data;
 }
 
