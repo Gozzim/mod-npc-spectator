@@ -157,17 +157,44 @@ void ArenaSpectatorNPC::GetMatchInformation(Battleground* arena, Player* target,
         }
     }
 
-    firstTeamId = target->GetArenaTeamId(slot);
-    firstTeamName = (sArenaTeamMgr->GetArenaTeamById(firstTeamId))->GetName();
-    Battleground::BattlegroundPlayerMap::const_iterator citr = arena->GetPlayers().begin();
-    for (; citr != arena->GetPlayers().end(); ++citr)
+    if (arena->isRated())
     {
-        if (Player * plrs = ObjectAccessor::FindPlayer(citr->first)) {
-            if (plrs->GetArenaTeamId(slot) != firstTeamId) {
-                mmrTwo = arena->GetArenaMatchmakerRating(citr->second->GetBgTeamId());
-                secondTeamName = (sArenaTeamMgr->GetArenaTeamById(plrs->GetArenaTeamId(slot)))->GetName();
-            } else if (plrs->GetArenaTeamId(slot) == firstTeamId) {
-                mmr = arena->GetArenaMatchmakerRating(citr->second->GetBgTeamId());
+        firstTeamId = target->GetArenaTeamId(slot);
+        firstTeamName = (sArenaTeamMgr->GetArenaTeamById(firstTeamId))->GetName();
+
+        Battleground::BattlegroundPlayerMap::const_iterator citr = arena->GetPlayers().begin();
+        for (; citr != arena->GetPlayers().end(); ++citr)
+        {
+            if (Player * plrs = ObjectAccessor::FindPlayer(citr->first)) {
+                if (plrs->GetArenaTeamId(slot) != firstTeamId) {
+                    mmrTwo = arena->GetArenaMatchmakerRating(citr->second->GetBgTeamId());
+                    secondTeamName = (sArenaTeamMgr->GetArenaTeamById(plrs->GetArenaTeamId(slot)))->GetName();
+                } else if (plrs->GetArenaTeamId(slot) == firstTeamId) {
+                    mmr = arena->GetArenaMatchmakerRating(citr->second->GetBgTeamId());
+                }
+            }
+        }
+    }
+    else if (sConfigMgr->GetOption<bool>("NpcArenaSpectator.ShowUnrated", false))
+    {
+        firstTeamId = target->GetArenaTeamId(slot);
+        firstTeamName = "";
+        secondTeamName = "";
+
+        Battleground::BattlegroundPlayerMap::const_iterator citr = arena->GetPlayers().begin();
+        for (; citr != arena->GetPlayers().end(); ++citr)
+        {
+            if (Player * plrs = ObjectAccessor::FindPlayer(citr->first)) {
+                if (plrs->GetArenaTeamId(slot) != firstTeamId) {
+                    if (secondTeamName != "")
+                        secondTeamName += ", ";
+                    secondTeamName += plrs->GetName();
+
+                } else if (plrs->GetArenaTeamId(slot) == firstTeamId) {
+                    if (firstTeamName != "")
+                        firstTeamName += ", ";
+                    firstTeamName += plrs->GetName();
+                }
             }
         }
     }
