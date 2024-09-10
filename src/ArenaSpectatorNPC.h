@@ -26,13 +26,27 @@
 #include "BattlegroundMgr.h"
 #include "Common.h"
 #include "Player.h"
+#include "Config.h"
+#include "WorldScript.h"
+
+#define NPC_ENTRY_SPECTATOR 190017
 
 enum NpcSpectatorActions {
+    NPC_SPECTATOR_ACTION_MAIN_MENU = 100,
+    NPC_SPECTATOR_ACTION_HELP = 200,
+    NPC_SPECTATOR_ACTION_1v1_GAMES = 900,
     NPC_SPECTATOR_ACTION_2V2_GAMES = 1000,
     NPC_SPECTATOR_ACTION_3V3_GAMES = 2000,
     NPC_SPECTATOR_ACTION_5V5_GAMES = 3000,
+    NPC_SPECTATOR_ACTION_3V3SOLO_GAMES = 4000,
     NPC_SPECTATOR_ACTION_SPECIFIC = 500,
-    NPC_SPECTATOR_ACTION_SELECTED_PLAYER = 4000
+    NPC_SPECTATOR_ACTION_SELECTED_PLAYER = 5000
+};
+
+class ConfigLoaderNpcSpectator : public WorldScript
+{
+public:
+    ConfigLoaderNpcSpectator() : WorldScript("config_loader_npc_spectator") { }
 };
 
 class ArenaSpectatorNPC
