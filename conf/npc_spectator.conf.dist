@@ -10,6 +10,7 @@
 
 NpcArenaSpectator.Enable = 1
 
+NpcArenaSpectator.ShowUnrated = 0
 
 NpcArenaSpectator.1v1.Enable = 0
 NpcArenaSpectator.1v1.SlotID = 3
@@ -20,6 +21,3 @@ NpcArenaSpectator.3v3soloQ.SlotID = 4
 NpcArenaSpectator.3v3soloQ.ArenaType = 4
 
 NpcArenaSpectator.Enable5v5 = 1
-
-# this feature is still work in progress, do NOT enable it on production
-NpcArenaSpectator.ShowUnrated = 0
