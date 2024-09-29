@@ -29,7 +29,7 @@
 #include "Config.h"
 #include "WorldScript.h"
 
-#define NPC_ENTRY_SPECTATOR 190017
+#define NPC_TEXT_id_SPECTATOR 190017
 
 enum NpcSpectatorActions {
     NPC_SPECTATOR_ACTION_MAIN_MENU = 100,
