@@ -16,6 +16,13 @@ Requires at least revision [azerothcore-wotlk@5143872](https://github.com/azerot
 2) Re-run cmake and launch a clean build of AzerothCore.
 ```
 
+## Usage
+
+`.npc add 190000`
+
+![image](https://github.com/user-attachments/assets/c6b6b757-183e-4a82-9a8c-8adc5299efb3)
+
+
 ## Credits
 - NPC for AzerothCore edited by [Gozzim](https://github.com/Gozzim)
 - Original Code by [Flameshot](https://github.com/Flameshot/TrinityCore/tree/Arena-Spectator)
