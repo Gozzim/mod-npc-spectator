@@ -36,25 +36,25 @@ ArenaSpectatorNPC* ArenaSpectatorNPC::instance()
 std::string ArenaSpectatorNPC::GetClassIconById(uint8 id) {
     switch (id) {
         case CLASS_WARRIOR:
-            return "|TInterface\\WorldStateFrame\\Icons-Classes:15:13:0:0:4:4:0:1:0:1|t|r";
+            return "|TInterface\\WorldStateFrame\\Icons-Classes:13:13:0:0:4:4:0:1:0:1|t|r";
         case CLASS_PALADIN:
-            return "|TInterface\\WorldStateFrame\\Icons-Classes:15:13:0:0:4:4:0:1:2:3|t|r";
+            return "|TInterface\\WorldStateFrame\\Icons-Classes:13:13:0:0:4:4:0:1:2:3|t|r";
         case CLASS_HUNTER:
-            return "|TInterface\\WorldStateFrame\\Icons-Classes:15:13:0:0:4:4:0:1:1:2|t|r";
+            return "|TInterface\\WorldStateFrame\\Icons-Classes:13:13:0:0:4:4:0:1:1:2|t|r";
         case CLASS_ROGUE:
-            return "|TInterface\\WorldStateFrame\\Icons-Classes:15:13:0:0:4:4:2:3:0:1|t|r";
+            return "|TInterface\\WorldStateFrame\\Icons-Classes:13:13:0:0:4:4:2:3:0:1|t|r";
         case CLASS_PRIEST:
-            return "|TInterface\\WorldStateFrame\\Icons-Classes:15:13:0:0:4:4:2:3:1:2|t|r";
+            return "|TInterface\\WorldStateFrame\\Icons-Classes:13:13:0:0:4:4:2:3:1:2|t|r";
         case CLASS_DEATH_KNIGHT:
-            return "|TInterface\\WorldStateFrame\\Icons-Classes:15:13:0:0:4:4:1:2:2:3|t|r";
+            return "|TInterface\\WorldStateFrame\\Icons-Classes:13:13:0:0:4:4:1:2:2:3|t|r";
         case CLASS_SHAMAN:
-            return "|TInterface\\WorldStateFrame\\Icons-Classes:15:13:0:0:4:4:1:2:1:2|t|r";
+            return "|TInterface\\WorldStateFrame\\Icons-Classes:13:13:0:0:4:4:1:2:1:2|t|r";
         case CLASS_MAGE:
-            return "|TInterface\\WorldStateFrame\\Icons-Classes:15:13:0:0:4:4:1:2:0:1|t|r";
+            return "|TInterface\\WorldStateFrame\\Icons-Classes:13:13:0:0:4:4:1:2:0:1|t|r";
         case CLASS_WARLOCK:
-            return "|TInterface\\WorldStateFrame\\Icons-Classes:15:13:0:0:4:4:3:4:1:2|t|r";
+            return "|TInterface\\WorldStateFrame\\Icons-Classes:13:13:0:0:4:4:3:4:1:2|t|r";
         case CLASS_DRUID:
-            return "|TInterface\\WorldStateFrame\\Icons-Classes:15:13:0:0:4:4:3:4:0:1|t|r";
+            return "|TInterface\\WorldStateFrame\\Icons-Classes:13:13:0:0:4:4:3:4:0:1|t|r";
         default:
             return "";
     }
@@ -65,25 +65,25 @@ std::string ArenaSpectatorNPC::GetRaceIconById(uint8 id, uint8 gender) {
     const std::string gender_icon = gender == GENDER_MALE ? "male" : "female";
     switch (id) {
         case RACE_HUMAN:
-            return "|TInterface/ICONS/achievement_character_human_" + gender_icon + ":15|t";
+            return "|TInterface/ICONS/achievement_character_human_" + gender_icon + ":13|t";
         case RACE_ORC:
-            return "|TInterface/ICONS/achievement_character_orc_" + gender_icon + ":15|t";
+            return "|TInterface/ICONS/achievement_character_orc_" + gender_icon + ":13|t";
         case RACE_DWARF:
-            return "|TInterface/ICONS/achievement_character_dwarf_" + gender_icon + ":15|t";
+            return "|TInterface/ICONS/achievement_character_dwarf_" + gender_icon + ":13|t";
         case RACE_NIGHTELF:
-            return "|TInterface/ICONS/achievement_character_nightelf_" + gender_icon + ":15|t";
+            return "|TInterface/ICONS/achievement_character_nightelf_" + gender_icon + ":13|t";
         case RACE_UNDEAD_PLAYER:
-            return "|TInterface/ICONS/achievement_character_undead_" + gender_icon + ":15|t";
+            return "|TInterface/ICONS/achievement_character_undead_" + gender_icon + ":13|t";
         case RACE_TAUREN:
-            return "|TInterface/ICONS/achievement_character_tauren_" + gender_icon + ":15|t";
+            return "|TInterface/ICONS/achievement_character_tauren_" + gender_icon + ":13|t";
         case RACE_GNOME:
-            return "|TInterface/ICONS/achievement_character_gnome_" + gender_icon + ":15|t";
+            return "|TInterface/ICONS/achievement_character_gnome_" + gender_icon + ":13|t";
         case RACE_TROLL:
-            return "|TInterface/ICONS/achievement_character_troll_" + gender_icon + ":15|t";
+            return "|TInterface/ICONS/achievement_character_troll_" + gender_icon + ":13|t";
         case RACE_BLOODELF:
-            return "|TInterface/ICONS/achievement_character_bloodelf_" + gender_icon + ":15|t";
+            return "|TInterface/ICONS/achievement_character_bloodelf_" + gender_icon + ":13|t";
         case RACE_DRAENEI:
-            return "|TInterface/ICONS/achievement_character_draenei_" + gender_icon + ":15|t";
+            return "|TInterface/ICONS/achievement_character_draenei_" + gender_icon + ":13|t";
         default:
             return "";
     }
