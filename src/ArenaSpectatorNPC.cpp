@@ -75,7 +75,7 @@ std::string ArenaSpectatorNPC::GetRaceIconById(uint8 id, uint8 gender) {
         case RACE_UNDEAD_PLAYER:
             return "|TInterface/ICONS/achievement_character_undead_" + gender_icon + ":15|t";
         case RACE_TAUREN:
-            return "|TInterface/ICONS/achievement_character_tauren_female:15|t";
+            return "|TInterface/ICONS/achievement_character_tauren_" + gender_icon + ":15|t";
         case RACE_GNOME:
             return "|TInterface/ICONS/achievement_character_gnome_" + gender_icon + ":15|t";
         case RACE_TROLL:
