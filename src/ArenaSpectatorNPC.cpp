@@ -34,27 +34,28 @@ ArenaSpectatorNPC* ArenaSpectatorNPC::instance()
 }
 
 std::string ArenaSpectatorNPC::GetClassIconById(uint8 id) {
-    switch (id) {
+    switch (id)
+    {
         case CLASS_WARRIOR:
-            return "|TInterface\\WorldStateFrame\\Icons-Classes:13:13:0:0:4:4:0:1:0:1|t|r";
+            return "|TInterface\\icons\\inv_sword_27:13|t";
         case CLASS_PALADIN:
-            return "|TInterface\\WorldStateFrame\\Icons-Classes:13:13:0:0:4:4:0:1:2:3|t|r";
+            return "|TInterface\\icons\\inv_hammer_01:13|t";
         case CLASS_HUNTER:
-            return "|TInterface\\WorldStateFrame\\Icons-Classes:13:13:0:0:4:4:0:1:1:2|t|r";
+            return "|TInterface\\icons\\inv_weapon_bow_07:13|t";
         case CLASS_ROGUE:
-            return "|TInterface\\WorldStateFrame\\Icons-Classes:13:13:0:0:4:4:2:3:0:1|t|r";
+            return "|TInterface\\icons\\inv_throwingknife_04:13|t";
         case CLASS_PRIEST:
-            return "|TInterface\\WorldStateFrame\\Icons-Classes:13:13:0:0:4:4:2:3:1:2|t|r";
+            return "|TInterface\\icons\\inv_staff_30:13|t";
         case CLASS_DEATH_KNIGHT:
-            return "|TInterface\\WorldStateFrame\\Icons-Classes:13:13:0:0:4:4:1:2:2:3|t|r";
+            return "|TInterface\\icons\\spell_deathknight_classicon:13|t";
         case CLASS_SHAMAN:
-            return "|TInterface\\WorldStateFrame\\Icons-Classes:13:13:0:0:4:4:1:2:1:2|t|r";
+            return "TInterface\\icons\\inv_jewelry_talisman_04:13|t";
         case CLASS_MAGE:
-            return "|TInterface\\WorldStateFrame\\Icons-Classes:13:13:0:0:4:4:1:2:0:1|t|r";
+            return "|TInterface\\icons\\inv_staff_13:13|t";
         case CLASS_WARLOCK:
-            return "|TInterface\\WorldStateFrame\\Icons-Classes:13:13:0:0:4:4:3:4:1:2|t|r";
+            return "|TInterface\\icons\\spell_nature_drowsy:13|t";
         case CLASS_DRUID:
-            return "|TInterface\\WorldStateFrame\\Icons-Classes:13:13:0:0:4:4:3:4:0:1|t|r";
+            return "|TInterface\\icons\\inv_misc_monsterclaw_04:13|t";
         default:
             return "";
     }
