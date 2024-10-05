@@ -90,6 +90,13 @@ std::string ArenaSpectatorNPC::GetRaceIconById(uint8 id, uint8 gender) {
     }
 }
 
+
+void truncateLastCharacterIfSpace(std::string teamName) {
+    if (teamName.substr(teamName.size()-1, teamName.size()) == " ") {
+        teamName.pop_back();
+    }
+}
+
 std::string ArenaSpectatorNPC::GetGamesStringData(Battleground* team, uint16 mmr, uint16 mmrTwo, std::string firstTeamName, std::string secondTeamName) {
     std::string teamsMember[PVP_TEAMS_COUNT];
     uint32 firstTeamId = 0;
@@ -116,6 +123,9 @@ std::string ArenaSpectatorNPC::GetGamesStringData(Battleground* team, uint16 mmr
 
             tmpTeamName[idx] += player->GetName() + " ";
         }
+
+    truncateLastCharacterIfSpace(tmpTeamName[0]);
+    truncateLastCharacterIfSpace(tmpTeamName[1]);
 
     // override team names only for unrated and 3v3soloQ
     if (!team->isRated() || team->GetArenaType() == _ARENA_TYPE_3V3_SOLO) {
