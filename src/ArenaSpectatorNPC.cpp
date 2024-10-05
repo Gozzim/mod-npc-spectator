@@ -92,9 +92,8 @@ std::string ArenaSpectatorNPC::GetRaceIconById(uint8 id, uint8 gender) {
 
 
 void truncateLastCharacterIfSpace(std::string teamName) {
-    if (teamName.substr(teamName.size()-1, teamName.size()) == " ") {
+    if (!teamName.empty() && teamName.substr(teamName.size()-1, teamName.size()) == " ")
         teamName.pop_back();
-    }
 }
 
 std::string ArenaSpectatorNPC::GetGamesStringData(Battleground* team, uint16 mmr, uint16 mmrTwo, std::string firstTeamName, std::string secondTeamName) {
