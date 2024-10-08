@@ -34,45 +34,75 @@ ArenaSpectatorNPC* ArenaSpectatorNPC::instance()
 }
 
 std::string ArenaSpectatorNPC::GetClassIconById(uint8 id) {
-    std::string sClass = "";
-    switch (id) {
+    switch (id)
+    {
         case CLASS_WARRIOR:
-            sClass = "|TInterface\\WorldStateFrame\\Icons-Classes:13:13:0:0:4:4:0:1:0:1|t|r";
-            break;
+            return "|TInterface\\icons\\inv_sword_27:13|t";
         case CLASS_PALADIN:
-            sClass = "|TInterface\\WorldStateFrame\\Icons-Classes:13:13:0:0:4:4:0:1:2:3|t|r";
-            break;
+            return "|TInterface\\icons\\inv_hammer_01:13|t";
         case CLASS_HUNTER:
-            sClass = "|TInterface\\WorldStateFrame\\Icons-Classes:13:13:0:0:4:4:0:1:1:2|t|r";
-            break;
+            return "|TInterface\\icons\\inv_weapon_bow_07:13|t";
         case CLASS_ROGUE:
-            sClass = "|TInterface\\WorldStateFrame\\Icons-Classes:13:13:0:0:4:4:2:3:0:1|t|r";
-            break;
+            return "|TInterface\\icons\\inv_throwingknife_04:13|t";
         case CLASS_PRIEST:
-            sClass = "|TInterface\\WorldStateFrame\\Icons-Classes:13:13:0:0:4:4:2:3:1:2|t|r";
-            break;
+            return "|TInterface\\icons\\inv_staff_30:13|t";
         case CLASS_DEATH_KNIGHT:
-            sClass = "|TInterface\\WorldStateFrame\\Icons-Classes:13:13:0:0:4:4:1:2:2:3|t|r";
-            break;
+            return "|TInterface\\icons\\spell_deathknight_classicon:13|t";
         case CLASS_SHAMAN:
-            sClass = "|TInterface\\WorldStateFrame\\Icons-Classes:13:13:0:0:4:4:1:2:1:2|t|r";
-            break;
+            return "TInterface\\icons\\inv_jewelry_talisman_04:13|t";
         case CLASS_MAGE:
-            sClass = "|TInterface\\WorldStateFrame\\Icons-Classes:13:13:0:0:4:4:1:2:0:1|t|r";
-            break;
+            return "|TInterface\\icons\\inv_staff_13:13|t";
         case CLASS_WARLOCK:
-            sClass = "|TInterface\\WorldStateFrame\\Icons-Classes:13:13:0:0:4:4:3:4:1:2|t|r";
-            break;
+            return "|TInterface\\icons\\spell_nature_drowsy:13|t";
         case CLASS_DRUID:
-            sClass = "|TInterface\\WorldStateFrame\\Icons-Classes:13:13:0:0:4:4:3:4:0:1|t|r";
-            break;
+            return "|TInterface\\icons\\inv_misc_monsterclaw_04:13|t";
+        default:
+            return "";
     }
-    return sClass;
+}
+
+
+std::string ArenaSpectatorNPC::GetRaceIconById(uint8 id, uint8 gender) {
+    const std::string gender_icon = gender == GENDER_MALE ? "male" : "female";
+    switch (id) {
+        case RACE_HUMAN:
+            return "|TInterface/ICONS/achievement_character_human_" + gender_icon + ":13|t";
+        case RACE_ORC:
+            return "|TInterface/ICONS/achievement_character_orc_" + gender_icon + ":13|t";
+        case RACE_DWARF:
+            return "|TInterface/ICONS/achievement_character_dwarf_" + gender_icon + ":13|t";
+        case RACE_NIGHTELF:
+            return "|TInterface/ICONS/achievement_character_nightelf_" + gender_icon + ":13|t";
+        case RACE_UNDEAD_PLAYER:
+            return "|TInterface/ICONS/achievement_character_undead_" + gender_icon + ":13|t";
+        case RACE_TAUREN:
+            return "|TInterface/ICONS/achievement_character_tauren_" + gender_icon + ":13|t";
+        case RACE_GNOME:
+            return "|TInterface/ICONS/achievement_character_gnome_" + gender_icon + ":13|t";
+        case RACE_TROLL:
+            return "|TInterface/ICONS/achievement_character_troll_" + gender_icon + ":13|t";
+        case RACE_BLOODELF:
+            return "|TInterface/ICONS/achievement_character_bloodelf_" + gender_icon + ":13|t";
+        case RACE_DRAENEI:
+            return "|TInterface/ICONS/achievement_character_draenei_" + gender_icon + ":13|t";
+        default:
+            return "";
+    }
+}
+
+
+void truncateLastCharacterIfSpace(std::string teamName) {
+    if (!teamName.empty() && teamName.substr(teamName.size()-1, teamName.size()) == " ")
+        teamName.pop_back();
 }
 
 std::string ArenaSpectatorNPC::GetGamesStringData(Battleground* team, uint16 mmr, uint16 mmrTwo, std::string firstTeamName, std::string secondTeamName) {
     std::string teamsMember[PVP_TEAMS_COUNT];
     uint32 firstTeamId = 0;
+
+    const uint32 _ARENA_TYPE_3V3_SOLO = sConfigMgr->GetOption<uint32>("NpcArenaSpectator.3v3soloQ.ArenaType", 4);
+    std::string tmpTeamName[PVP_TEAMS_COUNT];
+
     for (Battleground::BattlegroundPlayerMap::const_iterator itr = team->GetPlayers().begin(); itr != team->GetPlayers().end(); ++itr)
         if (Player * player = ObjectAccessor::FindPlayer(itr->first)) {
             if (player->IsSpectator())
@@ -82,20 +112,34 @@ std::string ArenaSpectatorNPC::GetGamesStringData(Battleground* team, uint16 mmr
                 continue;
 
             uint32 team = itr->second->GetBgTeamId();
+
             if (!firstTeamId)
                 firstTeamId = team;
 
-            teamsMember[firstTeamId == team] += GetClassIconById(player->getClass());
+            const auto idx = team == 0 ? 0 : 1;
+            teamsMember[idx] += GetClassIconById(player->getClass());
+            teamsMember[idx] += GetRaceIconById(player->getRace(), player->getGender());
+
+            tmpTeamName[idx] += player->GetName() + " ";
         }
 
-    std::string data = " " + teamsMember[0] + " " + secondTeamName + " (";
+    truncateLastCharacterIfSpace(tmpTeamName[0]);
+    truncateLastCharacterIfSpace(tmpTeamName[1]);
+
+    // override team names only for unrated and 3v3soloQ
+    if (!team->isRated() || team->GetArenaType() == _ARENA_TYPE_3V3_SOLO) {
+        firstTeamName = tmpTeamName[0];
+        secondTeamName = tmpTeamName[1];
+    }
+
+    std::string data = " " + teamsMember[1] + " " + secondTeamName + " (";
     std::stringstream ss;
     std::stringstream sstwo;
     ss << mmr;
     sstwo << mmrTwo;
     data += sstwo.str();
-    data += ") vs\n";
-    data += " " + teamsMember[1] + " " + firstTeamName + " (";
+    data += ") vs";
+    data += " " + teamsMember[0] + " " + firstTeamName + " (";
     data += ss.str();
     data += ")";
     return data;
@@ -109,13 +153,27 @@ ObjectGuid ArenaSpectatorNPC::GetFirstPlayerGuid(Battleground* team) {
     return ObjectGuid::Empty;
 }
 
+bool isReplay(Battleground* arena) {
+    Battleground::BattlegroundPlayerMap::const_iterator citr = arena->GetPlayers().begin();
+    for (; citr != arena->GetPlayers().end(); ++citr)
+    {
+        if (Player * plrs = ObjectAccessor::FindPlayer(citr->first)) {
+            if (!plrs->IsSpectator()) {
+                return false;
+            }
+        }
+    }
+
+    return true;
+}
+
 std::string ArenaSpectatorNPC::GetMatchCount(uint8 type) {
     uint16 i = 0;
 
     for (auto& itr : _bgMap)
     {
         Battleground* bg = itr.second;
-        if (BattlegroundMgr::IsArenaType(bg->GetBgTypeID()) && bg->GetArenaType() == type)
+        if (BattlegroundMgr::IsArenaType(bg->GetBgTypeID()) && bg->GetArenaType() == type && !isReplay(bg))
         {
             if (sConfigMgr->GetOption<bool>("NpcArenaSpectator.ShowUnrated", false))
                 i++;
@@ -131,7 +189,7 @@ void ArenaSpectatorNPC::GetMatchInformation(Battleground* arena, Player* target,
     uint8 slot;
 
     const uint32 ARENA_1v1_SLOT_ID = sConfigMgr->GetOption<uint32>("NpcArenaSpectator.1v1.SlotID", 3);
-    const uint32 ARENA_3V3_SOLO_SLOT_ID = sConfigMgr->GetOption<uint32>("NpcArenaSpectator.3v3.SlotID", 4);
+    const uint32 ARENA_3V3_SOLO_SLOT_ID = sConfigMgr->GetOption<uint32>("NpcArenaSpectator.3v3soloQ.SlotID", 4);
     const uint32 _ARENA_TYPE_1v1 = sConfigMgr->GetOption<uint32>("NpcArenaSpectator.1v1.ArenaType", 1);
     const uint32 _ARENA_TYPE_3V3_SOLO = sConfigMgr->GetOption<uint32>("NpcArenaSpectator.3v3soloQ.ArenaType", 4);
 
@@ -225,6 +283,9 @@ void ArenaSpectatorNPC::ShowPage(Player* player, uint16 page, uint32 arenaType) 
         Battleground* arena = itr.second;
         Player *target = ObjectAccessor::FindPlayer(GetFirstPlayerGuid(arena));
 
+        if (isReplay(arena))
+            continue;
+
         if (!arena->GetPlayersSize())
             continue;
 
@@ -234,7 +295,7 @@ void ArenaSpectatorNPC::ShowPage(Player* player, uint16 page, uint32 arenaType) 
 
         GetMatchInformation(arena, target, firstTeamId, firstTeamName, secondTeamName, mmr, mmrTwo);
 
-        const std::string prefix = arena->isRated() && sConfigMgr->GetOption<bool>("NpcArenaSpectator.ShowUnrated", false) ? GetClassIconById(CLASS_WARRIOR) : "";
+        const std::string prefix = arena->isRated() && sConfigMgr->GetOption<bool>("NpcArenaSpectator.ShowUnrated", false) ? "|TInterface\\icons\\achievement_arena_2v2_7:13|t" : "";
 
         if (arenaType == ARENA_TYPE_2v2 && arena->GetArenaType() == ARENA_TYPE_2v2) {
             TypeOne++;

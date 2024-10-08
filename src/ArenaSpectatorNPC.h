@@ -29,7 +29,7 @@
 #include "Config.h"
 #include "WorldScript.h"
 
-#define NPC_ENTRY_SPECTATOR 190017
+#define NPC_TEXT_id_SPECTATOR 190017
 
 enum NpcSpectatorActions {
     NPC_SPECTATOR_ACTION_MAIN_MENU = 100,
@@ -55,6 +55,7 @@ public:
     static ArenaSpectatorNPC* instance();
 
     std::string GetClassIconById(uint8 id);
+    std::string GetRaceIconById(uint8 id, uint8 gender);
     std::string GetGamesStringData(Battleground* team, uint16 mmr, uint16 mmrTwo, std::string firstTeamName, std::string secondTeamName);
     ObjectGuid GetFirstPlayerGuid(Battleground* team);
     std::string GetMatchCount(uint8 type);
