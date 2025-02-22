@@ -34,7 +34,10 @@ uint32 ARENA_TYPE_3V3_SOLO = 4;
 class ArenaSpectatorNPC_BG : public BGScript
 {
 public:
-    ArenaSpectatorNPC_BG() : BGScript("ArenaSpectatorNPC_BGScript") { }
+    ArenaSpectatorNPC_BG() : BGScript("ArenaSpectatorNPC_BGScript", {
+        ALLBATTLEGROUNDHOOK_ON_BATTLEGROUND_CREATE,
+        ALLBATTLEGROUNDHOOK_ON_BATTLEGROUND_DESTROY
+    }) { }
 
     void OnBattlegroundCreate(Battleground* bg) {
         if (bg->isArena())
