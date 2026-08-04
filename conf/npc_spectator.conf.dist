@@ -7,8 +7,16 @@
 #       Description: Enable system
 #       Default: 1
 #
+#   NpcArenaSpectator.StartDelay
+#       Description: Seconds a match must have been running before it can be spectated. Matches
+#                    still in the preparation countdown are hidden as well.
+#                    Does not apply to the .spectate command.
+#       Default: 15 - (0 = no delay)
+#
 
 NpcArenaSpectator.Enable = 1
+
+NpcArenaSpectator.StartDelay = 15
 
 NpcArenaSpectator.ShowUnrated = 0
 

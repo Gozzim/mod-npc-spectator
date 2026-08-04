@@ -59,6 +59,8 @@ public:
     std::string GetGamesStringData(Battleground* team, uint16 mmr, uint16 mmrTwo, std::string firstTeamName, std::string secondTeamName);
     ObjectGuid GetFirstPlayerGuid(Battleground* team);
     std::string GetMatchCount(uint8 type);
+    uint32 GetSpectateDelayRemaining(Battleground* arena);
+    bool IsSpectatable(Battleground* arena);
     void GetMatchInformation(Battleground* arena, Player* target, uint32& firstTeamId, std::string& firstTeamName, std::string& secondTeamName, uint16& mmr, uint16& mmrTwo);
     void ShowPage(Player* player, uint16 page, uint32 IsTop);
     void AddBGToMap(Battleground* bg);

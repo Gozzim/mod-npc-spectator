@@ -25,6 +25,7 @@
 #include "ScriptedGossip.h"
 #include "ObjectMgr.h"
 #include "Config.h"
+#include "World.h"
 
 
 ArenaSpectatorNPC* ArenaSpectatorNPC::instance()
@@ -167,13 +168,35 @@ bool isReplay(Battleground* arena) {
     return true;
 }
 
+uint32 ArenaSpectatorNPC::GetSpectateDelayRemaining(Battleground* arena) {
+    const uint32 delay = sConfigMgr->GetOption<uint32>("NpcArenaSpectator.StartDelay", 15) * IN_MILLISECONDS;
+
+    if (!delay)
+        return 0;
+
+    // GetStartTime() runs from arena creation and includes the preparation countdown, so the time
+    // spent fighting is whatever exceeds Arena.PrepTime. Clicking the ready markers shortens the
+    // countdown but compensates the start time, so the offset holds in both cases.
+    const uint32 spectateAt = sWorld->getIntConfig(CONFIG_ARENA_PREP_TIME) * IN_MILLISECONDS + delay;
+    const uint32 elapsed = arena->GetStartTime();
+
+    if (elapsed >= spectateAt)
+        return 0;
+
+    return (spectateAt - elapsed + IN_MILLISECONDS - 1) / IN_MILLISECONDS;
+}
+
+bool ArenaSpectatorNPC::IsSpectatable(Battleground* arena) {
+    return GetSpectateDelayRemaining(arena) == 0;
+}
+
 std::string ArenaSpectatorNPC::GetMatchCount(uint8 type) {
     uint16 i = 0;
 
     for (auto& itr : _bgMap)
     {
         Battleground* bg = itr.second;
-        if (BattlegroundMgr::IsArenaType(bg->GetBgTypeID()) && bg->GetArenaType() == type && !isReplay(bg))
+        if (BattlegroundMgr::IsArenaType(bg->GetBgTypeID()) && bg->GetArenaType() == type && !isReplay(bg) && IsSpectatable(bg))
         {
             if (sConfigMgr->GetOption<bool>("NpcArenaSpectator.ShowUnrated", false))
                 i++;
@@ -287,6 +310,9 @@ void ArenaSpectatorNPC::ShowPage(Player* player, uint16 page, uint32 arenaType) 
             continue;
 
         if (!arena->GetPlayersSize())
+            continue;
+
+        if (!IsSpectatable(arena))
             continue;
 
         if (!sConfigMgr->GetOption<bool>("NpcArenaSpectator.ShowUnrated", false) && !arena->isRated()) {

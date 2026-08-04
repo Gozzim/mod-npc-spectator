@@ -24,12 +24,32 @@
 #include "ArenaSpectator.h"
 #include "ArenaSpectatorNPC.h"
 #include "Chat.h"
+#include "Map.h"
 #include "ScriptedGossip.h"
 #include "ScriptMgr.h"
 #include "World.h"
 
 uint32 ARENA_TYPE_1v1 = 1;
 uint32 ARENA_TYPE_3V3_SOLO = 4;
+
+static bool CanSpectateNow(Player* player, Player* target)
+{
+    Map* map = target->FindMap();
+    if (!map || !map->IsBattleArena())
+        return true;
+
+    Battleground* arena = ((BattlegroundMap*)map)->GetBG();
+    if (!arena)
+        return true;
+
+    if (uint32 remaining = sArenaSpectatorNPC->GetSpectateDelayRemaining(arena))
+    {
+        ChatHandler(player->GetSession()).PSendSysMessage("This match can be spectated in {} seconds.", remaining);
+        return false;
+    }
+
+    return true;
+}
 
 class ArenaSpectatorNPC_BG : public BGScript
 {
@@ -137,6 +157,11 @@ public:
         } else {
             ObjectGuid guid = ObjectGuid(HighGuid::Player, action - NPC_SPECTATOR_ACTION_SELECTED_PLAYER);
             if (Player * target = ObjectAccessor::FindPlayer(guid)) {
+                if (!CanSpectateNow(player, target)) {
+                    CloseGossipMenuFor(player);
+                    return true;
+                }
+
                 ChatHandler handler(player->GetSession());
                 char const *pTarget = target->GetName().c_str();
                 ArenaSpectator::HandleSpectatorSpectateCommand(&handler, pTarget);
@@ -174,6 +199,11 @@ public:
             }
 
             if (Player * target = ObjectAccessor::FindPlayerByName(playerName)) {
+                if (!CanSpectateNow(player, target)) {
+                    OnGossipHello(player, creature);
+                    return false;
+                }
+
                 ChatHandler handler(player->GetSession());
                 char const *pTarget = target->GetName().c_str();
                 CloseGossipMenuFor(player);
