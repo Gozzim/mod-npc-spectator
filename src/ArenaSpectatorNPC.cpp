@@ -148,7 +148,7 @@ std::string ArenaSpectatorNPC::GetGamesStringData(Battleground* team, uint16 mmr
 ObjectGuid ArenaSpectatorNPC::GetFirstPlayerGuid(Battleground* team) {
     for (Battleground::BattlegroundPlayerMap::const_iterator itr = team->GetPlayers().begin();
          itr != team->GetPlayers().end(); ++itr)
-        if (Player * player = ObjectAccessor::FindPlayer(itr->first))
+        if (ObjectAccessor::FindPlayer(itr->first))
             return itr->first;
     return ObjectGuid::Empty;
 }
