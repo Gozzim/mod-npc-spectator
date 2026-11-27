@@ -22,9 +22,9 @@
 
 #include "ArenaSpectatorNPC.h"
 #include "ArenaTeamMgr.h"
-#include "ScriptedGossip.h"
-#include "ObjectMgr.h"
 #include "Config.h"
+#include "ObjectMgr.h"
+#include "ScriptedGossip.h"
 
 
 ArenaSpectatorNPC* ArenaSpectatorNPC::instance()
@@ -49,7 +49,7 @@ std::string ArenaSpectatorNPC::GetClassIconById(uint8 id) {
         case CLASS_DEATH_KNIGHT:
             return "|TInterface\\icons\\spell_deathknight_classicon:13|t";
         case CLASS_SHAMAN:
-            return "TInterface\\icons\\inv_jewelry_talisman_04:13|t";
+            return "|TInterface\\icons\\inv_jewelry_talisman_04:13|t";
         case CLASS_MAGE:
             return "|TInterface\\icons\\inv_staff_13:13|t";
         case CLASS_WARLOCK:
@@ -90,59 +90,43 @@ std::string ArenaSpectatorNPC::GetRaceIconById(uint8 id, uint8 gender) {
     }
 }
 
-
-void truncateLastCharacterIfSpace(std::string teamName) {
-    if (!teamName.empty() && teamName.substr(teamName.size()-1, teamName.size()) == " ")
-        teamName.pop_back();
-}
-
-std::string ArenaSpectatorNPC::GetGamesStringData(Battleground* team, uint16 mmr, uint16 mmrTwo, std::string firstTeamName, std::string secondTeamName) {
-    std::string teamsMember[PVP_TEAMS_COUNT];
-    uint32 firstTeamId = 0;
+std::string ArenaSpectatorNPC::GetGamesStringData(Battleground* arena)
+{
+    std::string icons[PVP_TEAMS_COUNT];
+    std::string names[PVP_TEAMS_COUNT];
 
     const uint32 _ARENA_TYPE_3V3_SOLO = sConfigMgr->GetOption<uint32>("NpcArenaSpectator.3v3soloQ.ArenaType", 4);
-    std::string tmpTeamName[PVP_TEAMS_COUNT];
 
-    for (Battleground::BattlegroundPlayerMap::const_iterator itr = team->GetPlayers().begin(); itr != team->GetPlayers().end(); ++itr)
-        if (Player * player = ObjectAccessor::FindPlayer(itr->first)) {
-            if (player->IsSpectator())
-                continue;
+    for (auto const& itr : arena->GetPlayers())
+    {
+        Player* player = ObjectAccessor::FindPlayer(itr.first);
+        if (!player || player->IsSpectator() || player->IsGameMaster())
+            continue;
 
-            if (player->IsGameMaster())
-                continue;
+        TeamId const side = player->GetBgTeamId();
+        icons[side] += GetClassIconById(player->getClass());
+        icons[side] += GetRaceIconById(player->getRace(), player->getGender());
 
-            uint32 team = itr->second->GetBgTeamId();
+        if (!names[side].empty())
+            names[side] += " ";
 
-            if (!firstTeamId)
-                firstTeamId = team;
-
-            const auto idx = team == 0 ? 0 : 1;
-            teamsMember[idx] += GetClassIconById(player->getClass());
-            teamsMember[idx] += GetRaceIconById(player->getRace(), player->getGender());
-
-            tmpTeamName[idx] += player->GetName() + " ";
-        }
-
-    truncateLastCharacterIfSpace(tmpTeamName[0]);
-    truncateLastCharacterIfSpace(tmpTeamName[1]);
-
-    // override team names only for unrated and 3v3soloQ
-    if (!team->isRated() || team->GetArenaType() == _ARENA_TYPE_3V3_SOLO) {
-        firstTeamName = tmpTeamName[0];
-        secondTeamName = tmpTeamName[1];
+        names[side] += player->GetName();
     }
 
-    std::string data = " " + teamsMember[1] + " " + secondTeamName + " (";
-    std::stringstream ss;
-    std::stringstream sstwo;
-    ss << mmr;
-    sstwo << mmrTwo;
-    data += sstwo.str();
-    data += ") vs";
-    data += " " + teamsMember[0] + " " + firstTeamName + " (";
-    data += ss.str();
-    data += ")";
-    return data;
+    // Rated names, like the ratings, come from the arena's per-side records, so they stay right after players leave
+    if (arena->isRated() && arena->GetArenaType() != _ARENA_TYPE_3V3_SOLO)
+    {
+        for (TeamId const side : { TEAM_ALLIANCE, TEAM_HORDE })
+        {
+            ArenaTeam* team = sArenaTeamMgr->GetArenaTeamById(arena->GetArenaTeamIdForTeam(side));
+            names[side] = team ? team->GetName() : "";
+        }
+    }
+
+    return " " + icons[TEAM_HORDE] + " " + names[TEAM_HORDE] + " ("
+        + std::to_string(arena->GetArenaMatchmakerRating(TEAM_HORDE)) + ") vs"
+        + " " + icons[TEAM_ALLIANCE] + " " + names[TEAM_ALLIANCE] + " ("
+        + std::to_string(arena->GetArenaMatchmakerRating(TEAM_ALLIANCE)) + ")";
 }
 
 ObjectGuid ArenaSpectatorNPC::GetFirstPlayerGuid(Battleground* team) {
@@ -185,80 +169,6 @@ std::string ArenaSpectatorNPC::GetMatchCount(uint8 type) {
     return std::to_string(i);
 }
 
-void ArenaSpectatorNPC::GetMatchInformation(Battleground* arena, Player* target, uint32& firstTeamId, std::string& firstTeamName, std::string& secondTeamName, uint16& mmr, uint16& mmrTwo) {
-    uint8 slot;
-
-    const uint32 ARENA_1v1_SLOT_ID = sConfigMgr->GetOption<uint32>("NpcArenaSpectator.1v1.SlotID", 3);
-    const uint32 ARENA_3V3_SOLO_SLOT_ID = sConfigMgr->GetOption<uint32>("NpcArenaSpectator.3v3soloQ.SlotID", 4);
-    const uint32 _ARENA_TYPE_1v1 = sConfigMgr->GetOption<uint32>("NpcArenaSpectator.1v1.ArenaType", 1);
-    const uint32 _ARENA_TYPE_3V3_SOLO = sConfigMgr->GetOption<uint32>("NpcArenaSpectator.3v3soloQ.ArenaType", 4);
-
-    const auto arenaType = arena->GetArenaType();
-
-    if (arenaType == _ARENA_TYPE_1v1) {
-        slot = ARENA_1v1_SLOT_ID;
-    } else if (arenaType == _ARENA_TYPE_3V3_SOLO) {
-        slot = ARENA_3V3_SOLO_SLOT_ID;
-    } else {
-        switch (arenaType)
-        {
-            case ARENA_TYPE_2v2:
-                slot = 0;
-                break;
-            case ARENA_TYPE_3v3:
-                slot = 1;
-                break;
-            case ARENA_TYPE_5v5:
-                slot = 2;
-                break;
-            default:
-                return;
-        }
-    }
-
-    if (arena->isRated())
-    {
-        firstTeamId = target->GetArenaTeamId(slot);
-        firstTeamName = (sArenaTeamMgr->GetArenaTeamById(firstTeamId))->GetName();
-
-        Battleground::BattlegroundPlayerMap::const_iterator citr = arena->GetPlayers().begin();
-        for (; citr != arena->GetPlayers().end(); ++citr)
-        {
-            if (Player * plrs = ObjectAccessor::FindPlayer(citr->first)) {
-                if (plrs->GetArenaTeamId(slot) != firstTeamId) {
-                    mmrTwo = arena->GetArenaMatchmakerRating(citr->second->GetBgTeamId());
-                    secondTeamName = (sArenaTeamMgr->GetArenaTeamById(plrs->GetArenaTeamId(slot)))->GetName();
-                } else if (plrs->GetArenaTeamId(slot) == firstTeamId) {
-                    mmr = arena->GetArenaMatchmakerRating(citr->second->GetBgTeamId());
-                }
-            }
-        }
-    }
-    else if (sConfigMgr->GetOption<bool>("NpcArenaSpectator.ShowUnrated", false))
-    {
-        firstTeamId = target->GetArenaTeamId(slot);
-        firstTeamName = "";
-        secondTeamName = "";
-
-        Battleground::BattlegroundPlayerMap::const_iterator citr = arena->GetPlayers().begin();
-        for (; citr != arena->GetPlayers().end(); ++citr)
-        {
-            if (Player * plrs = ObjectAccessor::FindPlayer(citr->first)) {
-                if (plrs->GetArenaTeamId(slot) != firstTeamId) {
-                    if (secondTeamName != "")
-                        secondTeamName += ", ";
-                    secondTeamName += plrs->GetName();
-
-                } else if (plrs->GetArenaTeamId(slot) == firstTeamId) {
-                    if (firstTeamName != "")
-                        firstTeamName += ", ";
-                    firstTeamName += plrs->GetName();
-                }
-            }
-        }
-    }
-}
-
 // Gossip action of the games list of the given arena type, 0 when the type has no list.
 // The 1v1 and 3v3 soloQ types are configurable, so they are matched before the stock ones.
 static uint32 GetGamesListAction(uint32 arenaType) {
@@ -282,12 +192,7 @@ static uint32 GetGamesListAction(uint32 arenaType) {
 }
 
 void ArenaSpectatorNPC::ShowPage(Player* player, uint16 page, uint32 arenaType) {
-    uint32 firstTeamId = 0;
     uint16 games = 0;
-    uint16 mmr = 0;
-    uint16 mmrTwo = 0;
-    std::string firstTeamName = "";
-    std::string secondTeamName = "";
     bool hasNextPage = false;
 
     const uint32 gamesListAction = GetGamesListAction(arenaType);
@@ -323,12 +228,10 @@ void ArenaSpectatorNPC::ShowPage(Player* player, uint16 page, uint32 arenaType) 
         if (games < page * GamesOnPage)
             continue;
 
-        Player* target = ObjectAccessor::FindPlayer(GetFirstPlayerGuid(arena));
-        GetMatchInformation(arena, target, firstTeamId, firstTeamName, secondTeamName, mmr, mmrTwo);
-
         const std::string prefix = arena->isRated() && sConfigMgr->GetOption<bool>("NpcArenaSpectator.ShowUnrated", false) ? "|TInterface\\icons\\achievement_arena_2v2_7:13|t" : "";
 
-        AddGossipItemFor(player, GOSSIP_ICON_BATTLE, prefix + GetGamesStringData(arena, mmr, mmrTwo, firstTeamName, secondTeamName), GOSSIP_SENDER_MAIN, NPC_SPECTATOR_ACTION_SELECTED_PLAYER + GetFirstPlayerGuid(arena).GetCounter());
+        AddGossipItemFor(player, GOSSIP_ICON_BATTLE, prefix + GetGamesStringData(arena), GOSSIP_SENDER_MAIN,
+                         NPC_SPECTATOR_ACTION_SELECTED_PLAYER + GetFirstPlayerGuid(arena).GetCounter());
     }
 
     if (page > 0)
