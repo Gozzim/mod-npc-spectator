@@ -25,8 +25,8 @@
 
 #include "BattlegroundMgr.h"
 #include "Common.h"
-#include "Player.h"
 #include "Config.h"
+#include "Player.h"
 #include "WorldScript.h"
 
 #define NPC_TEXT_id_SPECTATOR 190017
@@ -56,10 +56,9 @@ public:
 
     std::string GetClassIconById(uint8 id);
     std::string GetRaceIconById(uint8 id, uint8 gender);
-    std::string GetGamesStringData(Battleground* team, uint16 mmr, uint16 mmrTwo, std::string firstTeamName, std::string secondTeamName);
+    std::string GetGamesStringData(Battleground* arena);
     ObjectGuid GetFirstPlayerGuid(Battleground* team);
     std::string GetMatchCount(uint8 type);
-    void GetMatchInformation(Battleground* arena, Player* target, uint32& firstTeamId, std::string& firstTeamName, std::string& secondTeamName, uint16& mmr, uint16& mmrTwo);
     void ShowPage(Player* player, uint16 page, uint32 IsTop);
     void AddBGToMap(Battleground* bg);
     void RemoveBGFromMap(Battleground* bg);
