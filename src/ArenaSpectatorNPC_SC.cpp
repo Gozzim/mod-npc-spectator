@@ -24,8 +24,8 @@
 #include "ArenaSpectator.h"
 #include "ArenaSpectatorNPC.h"
 #include "Chat.h"
-#include "ScriptedGossip.h"
 #include "ScriptMgr.h"
+#include "ScriptedGossip.h"
 #include "World.h"
 
 uint32 ARENA_TYPE_1v1 = 1;
@@ -48,6 +48,30 @@ public:
 
     void OnBattlegroundDestroy(Battleground* bg) {
         sArenaSpectatorNPC->RemoveBGFromMap(bg);
+    }
+};
+
+// Spectators are not match participants, so the core never removes them when the match ends:
+// without this they would stay inside until the arena is destroyed.
+class ArenaSpectatorNPC_Player : public PlayerScript
+{
+public:
+    ArenaSpectatorNPC_Player() : PlayerScript("ArenaSpectatorNPC_PlayerScript", { PLAYERHOOK_ON_UPDATE }) { }
+
+    void OnPlayerUpdate(Player* player, uint32 /*p_time*/) override
+    {
+        if (!player->IsSpectator() || player->IsBeingTeleportedFar())
+            return;
+
+        Map* map = player->FindMap();
+        if (!map || !map->IsBattleArena())
+            return;
+
+        Battleground* bg = map->ToBattlegroundMap()->GetBG();
+        if (!bg || bg->GetStatus() != STATUS_WAIT_LEAVE)
+            return;
+
+        player->TeleportToEntryPoint();
     }
 };
 
@@ -194,4 +218,5 @@ void AddSC_ArenaSpectatorNPC()
     new ConfigLoaderNpcSpectator();
     new ArenaSpectatorNPC_Creature();
     new ArenaSpectatorNPC_BG();
+    new ArenaSpectatorNPC_Player();
 }
